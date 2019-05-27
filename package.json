@@ -1,0 +1,33 @@
+{
+	"name": "rollup-plugin-html-encoder",
+	"version": "0.0.1",
+	"description": "a rollup plugin for encoding html files as javascript modules",
+	"main": "dist/rollup-plugin-html-encoder.js",
+	"jsnext:main": "dist/rollup-plugin-html-encoder.mjs",
+	"scripts": {
+		"test": "mocha test/*.js",
+		"pretest": "npm run build",
+		"build": "rollup -c",
+		"prebuild": "rm -rf dist/*"
+	},
+	"keywords": [
+		"rollup",
+		"plugin",
+		"html"
+	],
+	"author": "odedshr",
+	"license": "ISC",
+	"dependencies": {
+		"rollup": "^1.12.3",
+		"rollup-plugin-buble": "^0.19.6",
+		"rollup-pluginutils": "^2.7.1",
+		"xmldom": "^0.1.27"
+	},
+	"devDependencies": {
+		"assert": "^2.0.0",
+		"eslint": "^5.16.0",
+		"mocha": "^6.1.4",
+		"rollup-plugin-node-resolve": "^5.0.0",
+		"source-map-support": "^0.5.12"
+	}
+}
