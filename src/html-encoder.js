@@ -1,4 +1,5 @@
 import { DOMParser } from 'xmldom';
+import Node from './Node.js';
 
 const domParser = new DOMParser(),
 	NodeType = {
@@ -32,19 +33,9 @@ class SubRoutine {
 			case 'loop':
 				const [iteratorAndIndex, varName] = this.varName.split('@'),
 					[iterator, index = '$i'] = iteratorAndIndex.split(':');
-				return `
-					const orig = { 
-						iterator: this._getValue(this.data, '${iterator}'),
-						index: this._getValue(this.data, '${index}')
-					},
-					list = this._getValue(this.data, '${varName}');
-					for (let k in list) {
-						this._setValue(this.data, '${index}', k);
-						this._setValue(this.data, '${iterator}', list[k]);
-						${this.children.join('\n')}
-					}
-					this._setValue(this.data, '${iterator}', orig.iterator);
-					this._setValue(this.data, '${index}', orig.index);`;
+				return `this._forEach('${iterator}', '${index}','${varName}', () => {
+					${this.children.join('\n')}
+				});`;
 			case 'if':
 				return `
 					if (this._getValue(this.data, '${this.varName}')) {
@@ -201,65 +192,15 @@ function getCssInstructions(classes) {
 function htmlEncoder(htmlString) {
 	const rootNode = domParser.parseFromString(htmlString, 'text/xml');
 
-	return `class Node { constructor(data) {
-			this.set = {};
-			this.domParser = new (this.constructor.DOMParser || DOMParser);
-			const docElm = (typeof document !== 'undefined') ? document : this.domParser.parseFromString('<html></html>').documentElement.parentNode;
-			this.data = data;
-			this.node = ${parseNode(rootNode)}
+	const nodeTemplate = [Node.toString().replace(/this\.node = {};/, `this.node = ${parseNode(rootNode)};`)];
 
-			if (Object.keys(this.set).length) {
-				this.node.set = this._getSetProxy(this.set);
-			}
-			return this.node;
-		}
-		_getSetProxy(map) {
-			return new Proxy(map, {
-				get: (map, prop) => {
-					const property = map[prop];
-					if (property) {
-						switch(property.type) {
-							case 'text': return property.node.data;
-							case 'html': return property.node;
-							case 'attribute': return property.node.getAttribute(property.attrName);
-						}
-					}
-				},
-				set: (map, prop, value) => {
-					const property = map[prop];
-					if (property) {
-						switch(property.type) {
-							case 'text': property.node.data = value; break;
-							case 'html':
-								const newNode = (typeof value ==='string') ? this.domParser.parseFromString(value) : value;
-								property.node.parentNode.replaceChild(newNode, property.node); break;
-							case 'attribute':
-								property.node.setAttribute(property.attrName, value);
-							break;
-						}
-					}
-					return true;
-				}
-			});
-		}
-		_getFirstOrSelf(elm) {
-			if (elm.lastChild && elm.lastChild.nodeType === 1) {
-				return elm.lastChild;
-			}
-			return elm;
-		}
-	  _getValue(data, path) { 
-			return (path[0] === '!') ?
-				!this._getValue(data, path.substr(1)) :
-				path.split('.').reduce((ptr, step) => ptr && ptr[step], data);
-		}
-		_setValue(data, path, value) {
-			const pathParts = path.split('.'),
-				varName = pathParts.pop();
-			pathParts.reduce((ptr, step) => ptr && ptr[step], data)[varName] = value;
-		}
+	for (let k in Node.prototype) {
+		nodeTemplate.push(`Node.prototype.${k} = ${Node.prototype[k].toString()}`);
 	}
-  export default Node;`;
+
+	nodeTemplate.push('export default Node;');
+
+	return nodeTemplate.join('\n');
 }
 
 export default htmlEncoder;
