@@ -1,6 +1,6 @@
 {
 	"name": "rollup-plugin-html-encoder",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "a rollup plugin for encoding html files as javascript modules",
 	"main": "dist/rollup-plugin-html-encoder.js",
 	"jsnext:main": "dist/rollup-plugin-html-encoder.mjs",
