@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/odedshr/rollup-plugin-html-encoder.svg?branch=gh-pages.src)](https://travis-ci.org/odedshr/rollup-plugin-html-encoder)
+[![Dependency Status](https://david-dm.org/odedshr/rollup-plugin-html-encoder.svg?theme=shields.io)](https://david-dm.org/odedshr/rollup-plugin-html-encoder)
+[![license](http://img.shields.io/badge/license-ISC-brightgreen.svg)](https://github.com/odedshr/rollup-plugin-html-encoder/blob/master/LICENSE)
+
 # Rollup Plugin HTML Encoder
 ## Overview
 
@@ -120,7 +124,7 @@ console.log(new UlTemplate({ items: ['a','b','c'], liTemplate }).toString())
 
 ## The idea behind the project
 The HTML `<template>` element can be useful when (a) we have repetitive HTML content; or (b) when we're introducing new content. But because of the static nature of HTML which doesn't really support any data-binding on its own, the `template` element becomes meaningless. 
-I believe that there is a conceptual flaw with HTML `<template>` element (or at least it is I who failed to find a reasonable tutorial how to use it properly): `<template>` tags are meant to help having dynamic content in the page by providing the template as base, but as long as it is handled using javascript and not a pure-browser-native code, it must be encoded (for performance sake) to javascript before being used, and if the translation occurs at the browser-side than by definition it'll effect performance.
+I believe that there is a conceptual flaw with HTML `<template>` element (or at least it is I who failed to find a reasonable tutorial how to use it properly): `<template>` tags are meant to help having dynamic content in the page by providing the template as base, but as long as it is handled using javascript and not a pure-browser-native code, it must be encoded (for performance sake) to javascript before being used, and if the translation occurs at the browser-side then by definition it'll effect performance.
 
 ### How could it have worked natively?
 1. `<template>` tag should have a `data-bind` attribute, which is then connected to a javascript variable hold an object (or array of objects) with fields that will be populated natively. For example - `<template data-bind="names"><li data-bind="name"><li></template>` would be displayed as `<li>Alex</li><li>Ben</li>`
@@ -138,7 +142,7 @@ Without native-browser-based data-population and without javascript-less support
 And now let's talk about [JSX](https://medium.com/javascript-scene/jsx-looks-like-an-abomination-1c1ec351a918), which is another kind of template. JSX in essence, is a pseudo-html code written within JS code and then pre-compiled to pure JS which is served to the browser. It's a much more efficient way to write template but I don't like it, because in order to write proper JSX you need to proficient in both HTML and Javascript and for me it feels like a mix of responsibilities. HTML provides the structure to our page, while javascript provides computability and these are two different things from my point of view.
 
 ### This is where the html-encoder comes in
-I would like to write a normal HTML file but include in it the `data-bind` attribute without any additional javascript programming (it would have been nice to do so natively but that's just wishful thinking) and this HTML can be pre-compiled on the server and served as a static page (live-refresh is bonus). The `HTML encoder` does exactly that:
+I would like to write a normal HTML  file but empower it with a `data-bind` attribute without any additional javascript programming (it would have been nice to do so natively but that's just wishful thinking) and this HTML can be pre-compiled on the server and served as a static page (live-refresh is bonus). The `HTML encoder` does exactly that:
 
 1. Write a normal HTML file
 2. Import it to your javascript code using `import Node from `./example.template.html;` and then use it by appending it to the DOM - `document.appendChild(new Node());`
@@ -147,7 +151,7 @@ Behind the scenes, I use [Rollup](https://rollupjs.org/) plugin capability to de
 
 ### Adding dynamic content
 A guiding principle was to write an HTML valid code, but this raised the question - "Where can we place the computational instructions required?" and I found the Process Instructions (PI for short). they look a bit ugly I must admit - `<?=value?>` but for the proof-of-concept they serve their purpose.
-Looking at other templating systems such as [Vue](https://medium.com/@Pier/vue-js-the-good-the-meh-and-the-ugly-82800bbe6684), the PIs are attributes in the elements or new html-invalid elements (i.e. not part of the HTML language). The <`? ... ?>` is a valid HTML element, it should appear as a first child to the element we wish to manipulate or immediately following it (in case of a childless element).
+Looking at other templating systems such as [Vue](https://medium.com/@Pier/vue-js-the-good-the-meh-and-the-ugly-82800bbe6684), the PIs are attributes in the elements or new html-invalid elements (i.e. not part of the HTML language). The `<? ... ?>` is a valid HTML element, it should appear as a first child to the element we wish to manipulate or immediately following it (in case of a childless element).
 
 ## Cheatsheet
 1. `<?=text?>` creates a textNode with the content of the variable named `text`.
@@ -167,4 +171,4 @@ Looking at other templating systems such as [Vue](https://medium.com/@Pier/vue-j
    When a subTemplates' class is provided with the data it can be used with `<?:subTemplateVarName?>` and it will get the data as the parent-template.
 
 ## Future steps
-I find this project to be rather exciting, as I plan to add event-listening functionality and I originally suggested, built-in fetch functionality, but I see it mainly as a thought-experiment in creating a relatively clean internet code, well-encapsulated and easy to use.
+This project is mostly thought-experiment in creating a relatively clean internet code, well-encapsulated and easy to use. The next step will be to try create an application with it and see whether it holds to its promise and allows easy development with no need to touch HTML code directly from the javascript.
