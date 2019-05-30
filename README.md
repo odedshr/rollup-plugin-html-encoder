@@ -83,7 +83,17 @@ console.log((new Node({ parent: 'parent', sibling: 'sibling'})).toString)
 14. _<?css condition?value?>_ will add the css-class or array-of-classes provided in `value` if the variable `condition` is truthy.
 
 ## Easy-access to Content
-It's possible to provide quick-access to specific nodes and attributes by providing them with a `live-id`. For example:
+HTML elements with an `id` attribute can easily be acceses at `node.set[id]`, for example:
+```
+template.html:
+<button id="cta">Foo</div>
+
+javascript:
+const node = new Node();
+node.set.cta.addEventListener('click', ... );
+```
+
+text nodes and html nodes that were added using `<?=text ?>` and `<?==html ?>` can also have quick-access, by adding a `#id` suffix. For example:
 ```
 template.html:
 <div>Hello <?=firstName #name?></div>
@@ -95,9 +105,18 @@ node.live.name = 'Ben';
 console.log(node.toString()); // output `<div>Hello Ben</div>`
 ```
 
-15. `<?=text #liveId?>` => create a textnode and update its value
-16. `<?==html #liveId?>` => create a node and update its value with either text or node
-17. `<?attr object #liveId?>` will essentially provide quick-access to all of the node's attribtue via node.live[liveId#attributeName]
+1.  `<?=text #id?>` => create a textnode and update its value
+2.  `<?==html #id?>` => create a node and update its value with either text or node
+
+## Sub-Templates
+it is possible to use existing templates using the `<?:templateNamte?>` command. For example:
+```
+liTemplate: <li><?=v?></li>
+ulTemplate: <ul><?v@items?><?:liTemplate?><?/@?></ul>'
+
+console.log(new UlTemplate({ items: ['a','b','c'], liTemplate }).toString())
+// output: <ul><li>a</li><li>b</li><li>c</li></ul>
+```
 
 ## The idea behind the project
 The HTML `<template>` element can be useful when (a) we have repetitive HTML content; or (b) when we're introducing new content. But because of the static nature of HTML which doesn't really support any data-binding on its own, the `template` element becomes meaningless. 
@@ -130,15 +149,22 @@ Behind the scenes, I use [Rollup](https://rollupjs.org/) plugin capability to de
 A guiding principle was to write an HTML valid code, but this raised the question - "Where can we place the computational instructions required?" and I found the Process Instructions (PI for short). they look a bit ugly I must admit - `<?=value?>` but for the proof-of-concept they serve their purpose.
 Looking at other templating systems such as [Vue](https://medium.com/@Pier/vue-js-the-good-the-meh-and-the-ugly-82800bbe6684), the PIs are attributes in the elements or new html-invalid elements (i.e. not part of the HTML language). The <`? ... ?>` is a valid HTML element, it should appear as a first child to the element we wish to manipulate or immediately following it (in case of a childless element).
 
-1. `<div><?=name?></div>` decoded with `new Node({ name: 'Dave'})` will result with `<div>Dave</div>`. Note that the variable must be a text-only (no HTML tags).
-2. `<?==link?>` will decode html-content or a node.
-3. `<??condition?>xxx<?/??>` will add the content only if condition is true. A boolean-negate ("!") is also available so <??!condition?>xxx<?/??> will add the content only if condition is false.
-4. `<?item:index@items?>xxx<?/@?>` will iterate over items (either an array or an object) providing the key and value and the given variable names (in the example it would be "item" and "index")
+## Cheatsheet
+1. `<?=text?>` creates a textNode with the content of the variable named `text`.
+2. `<?==html?>` creates an HTML element with the content of `html`, which can be either an HTML element or a string that will be parsed as HTML.
+3. Conditions:
+   `<??condition?>xxx<?/??>` will add the content only if condition is true. A boolean-negate (`!`) is also available so `<??!condition?>xxx<?/??>` will add the content only if condition is false.
+4. Loops:
+   `<?item:index@items?>xxx<?/@?>` will iterate over items (either an array or an object) providing the key and value and the given variable names (in the example it would be `item` and `index`)
 5. Attributes:
 `<?attr key1=varName1 key2=varName2?>` will set the attributes in preceding element
 `<?attr attrObject?>` will set the attributes described in the attrObject (i.e. the key is the attribute name and the value is the actual value)
 6. CSS classes:
 `<?css varName?>` will set the class(es) described in the variable that can be either a string or an array. it's also possible to condition a class by writing `<?class condition?varName?>`.
+7. Editable content:
+   you can access created nodes at `node.set.foo` if the id was provided in one of those ways `<?=text #foo?>` or `<?==html #foo?>` or `<div id="foo">`.
+8. SubTemplates:
+   When a subTemplates' class is provided with the data it can be used with `<?:subTemplateVarName?>` and it will get the data as the parent-template.
 
-### Future steps
+## Future steps
 I find this project to be rather exciting, as I plan to add event-listening functionality and I originally suggested, built-in fetch functionality, but I see it mainly as a thought-experiment in creating a relatively clean internet code, well-encapsulated and easy to use.

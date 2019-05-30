@@ -3,17 +3,24 @@ const assert = require('assert'),
 	DOMParser = require('xmldom').DOMParser,
 	domParser = new DOMParser(),
 	virutalSourceFile = `${__dirname}/test/samples/test1.html`,
-	getNode = (htmlString, data) => {
+	getTemplate = htmlString => {
 		const output = transform(htmlString, virutalSourceFile).code;
 
 		try {
 			const Node = new Function(output.replace(/export default/, 'return'))();
 			Node.DOMParser = DOMParser;
 
-			return new Node(data);
+			return Node;
 		} catch (err) {
-			console.error(err);
-			console.log(output);
+			console.error({ err });
+			console.log({ output });
+		}
+	},
+	getNode = (htmlString, data) => {
+		try {
+			return new (getTemplate(htmlString))(data);
+		} catch (error) {
+			console.error(error);
 		}
 	},
 	encode = (htmlString, data) => {
@@ -161,6 +168,7 @@ describe('htmlEncoder: css class', () => {
 			'set conditional class to sibling node'
 		));
 });
+
 describe('htmlEncoder: real-time-updates', () => {
 	it('supports <?=text #liveId?>', () => {
 		const node = getNode('<div>Hello <?=name #name?></div>', { name: 'World' });
@@ -184,16 +192,21 @@ describe('htmlEncoder: real-time-updates', () => {
 	});
 
 	it('supports <?attr value=key #liveId?> for parent', () => {
-		const node = getNode('<div><?attr value=value #attrs?>Hello</div>', { value: 'foo' });
-		assert.equal(node.toString(), '<div value="foo">Hello</div>', 'binded html');
-		node.set['attrs#value'] = 'bar';
-		assert.equal(node.toString(), '<div value="bar">Hello</div>', 'binded html updated');
+		const node = getNode('<div id="attrs"><?attr value=value?>Hello</div>', { value: 'foo' });
+		assert.equal(node.toString(), '<div id="attrs" value="foo">Hello</div>', 'binded html');
+		node.set.attrs.setAttribute('value', 'bar');
+		assert.equal(node.toString(), '<div id="attrs" value="bar">Hello</div>', 'binded html updated');
 	});
+});
 
-	it('supports <?attr attributeMap #liveId?> for parent', () => {
-		const node = getNode('<div><?attr attrs #attrs?>Hello</div>', { attrs: { value: 'foo' } });
-		assert.equal(node.toString(), '<div value="foo">Hello</div>', 'binded html');
-		node.set['attrs#value'] = 'bar';
-		assert.equal(node.toString(), '<div value="bar">Hello</div>', 'binded html updated');
-	});
+describe('htmlEncoder: sub-templates', () => {
+	it('supports <?:subTemplate?>', () =>
+		assert.equal(
+			encode('<ul><?v@items?><?:liTemplate?><?/@?></ul>', {
+				items: ['a', 'b', 'c'],
+				liTemplate: getTemplate('<li><?=v?></li>')
+			}),
+			'<ul><li>a</li><li>b</li><li>c</li></ul>',
+			'iterates an array using a sub-template'
+		));
 });

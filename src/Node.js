@@ -15,6 +15,11 @@ class Node {
 		return this.node;
 	}
 
+	_getSubTemplate(templateName) {
+		const Template = this._getValue(this.data, templateName);
+		return new Template(this.data);
+	}
+
 	_getSetProxy(map) {
 		return new Proxy(map, {
 			get: (map, prop) => {
@@ -26,12 +31,13 @@ class Node {
 						case 'html':
 							return property.node;
 						case 'attribute':
-							return property.node.getAttribute(property.attrName);
+							return property.node;
 					}
 				}
 			},
 			set: (map, prop, value) => {
 				const property = map[prop];
+
 				if (property) {
 					switch (property.type) {
 						case 'text':
@@ -39,11 +45,13 @@ class Node {
 							break;
 						case 'html':
 							const newNode = typeof value === 'string' ? this.domParser.parseFromString(value) : value;
-							property.node.parentNode.replaceChild(newNode, property.node);
-							break;
+							return property.node.parentNode.replaceChild(newNode, property.node);
 						case 'attribute':
-							property.node.setAttribute(property.attrName, value);
-							break;
+							if (value === null) {
+								return property.node.removeAttribute(prop);
+							}
+
+							return property.node.setAttribute(prop, value);
 					}
 				}
 				return true;
