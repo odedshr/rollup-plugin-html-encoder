@@ -5,9 +5,9 @@
 	"main": "dist/rollup-plugin-html-encoder.js",
 	"jsnext:main": "dist/rollup-plugin-html-encoder.mjs",
 	"scripts": {
-		"test": "mocha test/*.js",
+		"test": "node_modules/mocha/bin/mocha test/*.js",
 		"pretest": "npm run build",
-		"build": "rollup -c",
+		"build": "node_modules/rollup/bin/rollup -c",
 		"prebuild": "rm -rf dist/*"
 	},
 	"keywords": [
