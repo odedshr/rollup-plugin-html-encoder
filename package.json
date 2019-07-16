@@ -17,6 +17,10 @@
 	],
 	"author": "odedshr",
 	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/odedshr/rollup-plugin-html-encoder.git"
+	},
 	"dependencies": {
 		"rollup": "^1.12.3",
 		"rollup-plugin-buble": "^0.19.6",
@@ -25,9 +29,9 @@
 	},
 	"devDependencies": {
 		"assert": "^2.0.0",
-		"eslint": "^5.16.0",
+		"eslint": "^6.0.1",
 		"mocha": "^6.1.4",
-		"rollup-plugin-node-resolve": "^5.0.0",
+		"rollup-plugin-node-resolve": "^5.2.0",
 		"source-map-support": "^0.5.12"
 	}
 }
