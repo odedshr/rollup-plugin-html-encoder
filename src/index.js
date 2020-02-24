@@ -1,5 +1,5 @@
 import { createFilter } from 'rollup-pluginutils';
-import htmlEncoder from './html-encoder.js';
+import htmlEncoder from 'html-encoder';
 
 const ext = /\.html$/;
 
