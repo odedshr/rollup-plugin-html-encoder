@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"declarationDir": "./dist/@types",
+		"module": "ES2020",
+		"noImplicitAny": true,
+		"outDir": "./dist",
+		"target": "es5",
+		"moduleResolution": "node" /* this allows electron */
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules"],
+	"strict": true /* Enable all strict type-checking options. */,
+	"esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+}
