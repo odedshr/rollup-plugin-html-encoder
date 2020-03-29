@@ -6,6 +6,7 @@
 	"types": "dist/@types/index.t.ts",
 	"scripts": {
 		"test": "mocha tests/*.js",
+		"pretest": "tsc",
 		"build": "tsc"
 	},
 	"keywords": [
@@ -20,7 +21,7 @@
 		"url": "git+https://github.com/odedshr/rollup-plugin-html-encoder.git"
 	},
 	"dependencies": {
-		"html-encoder": "^0.2.9",
+		"html-encoder": "^0.2.10",
 		"typescript": "^3.8.3",
 		"xmldom": "^0.3.0"
 	},
