@@ -2,8 +2,8 @@
 	"compilerOptions": {
 		"declaration": true,
 		"declarationDir": "./dist/@types",
-		"module": "ES2020",
-		"noImplicitAny": true,
+		"module": "CommonJS",
+		"noImplicitAny": false,
 		"outDir": "./dist",
 		"target": "es5",
 		"moduleResolution": "node" /* this allows electron */
