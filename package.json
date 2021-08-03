@@ -23,7 +23,7 @@
 	"dependencies": {
 		"html-encoder": "^0.2.10",
 		"typescript": "^3.8.3",
-		"xmldom": "^0.3.0"
+		"xmldom": "^0.6.0"
 	},
 	"devDependencies": {
 		"assert": "^2.0.0",
